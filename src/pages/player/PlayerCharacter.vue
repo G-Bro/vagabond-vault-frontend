@@ -2,11 +2,13 @@
 import { PlayerCharacter } from '@vagabondvault/player-character';
 import { usePlayerCharacter } from '../../clients/playerCharacter';
 import { ref } from 'vue';
+import FactionRelationships from './FactionRelationships.vue';
+import CharacterStat from './CharacterStat.vue';
 
 const playerCharacterClient = usePlayerCharacter();
 const playerCharacter = ref<PlayerCharacter | null>(null);
 
-const getPlayerCharacter = async (id) => {
+const getPlayerCharacter = async (id: number) => {
     playerCharacter.value = await playerCharacterClient.get(id);
 };
 
@@ -77,23 +79,20 @@ getPlayerCharacter(1);
         </ul>
       </div>
       <div class="reputation">
-        <h3>Your Reputation</h3>
-        <div v-for="relationship in playerCharacter.relationships" :key="relationship.id">
-          <div class="flex">
-            <div><p>{{ relationship.faction?.name }}</p></div>
-            <div><input type="checkbox" v-for="i in 9" :key="i" :checked="i > 9 -( relationship.notoriety ?? 0) "/></div>
-            <div><p>{{ relationship.bonus }}</p></div>
-            <div><input type="checkbox" v-for="i in 15" :key="i" :checked="i <= (relationship.prestige ?? 0) "/></div>
-          </div>
+        <div class="flex gap-3">
+          <hr class="grow mt-4 border-dotted border-0 border-t-4" />
+          <h3>Your Reputation</h3>
+          <hr class="grow mt-4 border-dotted border-0 border-t-4" />
         </div>
+        <FactionRelationships :relationships="playerCharacter.relationships" />
       </div>
       <div class="stats">
         <div>
-          <h2>Charm: {{ playerCharacter.stats?.charm }}</h2>
-          <h2>Cunning: {{ playerCharacter.stats?.cunning }}</h2>
-          <h2>Finesse: {{ playerCharacter.stats?.finesse }}</h2>
-          <h2>Luck: {{ playerCharacter.stats?.luck }}</h2>
-          <h2>Might: {{ playerCharacter.stats?.might }}</h2>
+          <CharacterStat stat="Charm" :value="playerCharacter.stats?.charm" />
+          <CharacterStat stat="Cunning" :value="playerCharacter.stats?.cunning" />
+          <CharacterStat stat="Finesse" :value="playerCharacter.stats?.finesse" />
+          <CharacterStat stat="Luck" :value="playerCharacter.stats?.luck" />
+          <CharacterStat stat="Might" :value="playerCharacter.stats?.might" />
         </div>
       </div>
       <div class="moves">
