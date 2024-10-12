@@ -24,3 +24,14 @@ h5 {
 h6 {
     @apply text-base font-bold;
 }
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.35s ease;
+    position: absolute;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}

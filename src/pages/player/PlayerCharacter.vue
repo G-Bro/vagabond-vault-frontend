@@ -4,6 +4,11 @@ import { usePlayerCharacter } from '../../clients/playerCharacter';
 import { ref } from 'vue';
 import FactionRelationships from './FactionRelationships.vue';
 import CharacterStat from './CharacterStat.vue';
+import CharacterHarm from './CharacterHarm.vue';
+import TabSelectMenu from './TabSelectMenu.vue';
+import PlayerActions from './PlayerActions.vue';
+import { faPersonRunning, faFeather, faBriefcase, faMedal, faLeaf } from '@fortawesome/free-solid-svg-icons';
+import type { InformationCategory } from './types';
 
 const playerCharacterClient = usePlayerCharacter();
 const playerCharacter = ref<PlayerCharacter | null>(null);
@@ -13,81 +18,46 @@ const getPlayerCharacter = async (id: number) => {
 };
 
 getPlayerCharacter(1);
+
+const categories: InformationCategory[] = [
+    { name: 'Moves, Skills & Feats', code: 'moves', icon: faPersonRunning },
+    { name: 'Drives & Nature', code: 'drives', icon: faLeaf },
+    { name: 'Reputation & Relationships', code: 'reputation', icon: faMedal },
+    { name: 'Equipment', code: 'equipment', icon: faBriefcase },
+    { name: 'Background, Connections & Details', code: 'background', icon: faFeather },
+];
+
+const activeCategory = ref<InformationCategory>(categories[0]);
+
+const onSelectCategory = (category: InformationCategory) => {
+  console.log('Selected category:', category);
+  activeCategory.value = category;
+};
 </script>
 
 <template>
   <div class="container mx-auto">
-    <div class="playbook p-3 gap-2" v-if="playerCharacter">
-      <div class="header grid grid-cols-2">
-        <div>
-          <h1>{{ playerCharacter.playbook?.name }}</h1>
+    <div class="flex flex-col h-[100vh]" v-if="playerCharacter">
+      <div class="playbook flex v-[100vw]">
+        <div class="header grow grid gap-2 p-4">
+          <div class="image">
+            <img src="https://via.placeholder.com/150" alt="Character Image" class="rounded-full"/>
+          </div>
+          <div class="player-name">
+            <h3>{{ playerCharacter.name }}</h3>
+          </div>
+          <div class="playbook-name">
+            <p>{{ playerCharacter.playbook?.name }}</p>
+          </div>
         </div>
-        <div>
-          <p>{{ playerCharacter.playbook?.description }}</p>
-        </div>
-      </div>
-      <div class="details">
-        <div class="name">
-          <p>Name:</p>
-          <p>{{ playerCharacter.name }}</p>
-        </div>
-        <div class="species">
-          <p>Species:</p>
-          <p>...TBD</p>
-        </div>
-        <div class="details">
-          <p>Details:</p>
-          <p>...TBD</p>
-        </div>
-        <div class="demeanor">
-          <p>Demeanor:</p>
-          <p>...TBD</p>
+        <div class="harm p-4">
+          <CharacterHarm />
+          <CharacterHarm />
+          <CharacterHarm />
         </div>
       </div>
-      <div class="image">
-        <p>Image goes here</p>
-      </div>
-      <div class="natures">
-        <h2>Your Nature</h2>
-        <ul>
-          <li v-for="nature in playerCharacter.natures" :key="nature.id">
-            <h3>{{ nature.name }}</h3>
-            <p>{{ nature.description }}</p>
-          </li>
-        </ul>
-      </div>
-      <div class="background">
-        <h2>Your Background</h2>
-        <p>...TBD</p>
-      </div>
-      <div class="drives">
-        <h2>Your Drives</h2>
-        <ul>
-          <li v-for="drive in playerCharacter.drives" :key="drive.id">
-            <h3>{{ drive.name }}</h3>
-            <p>{{ drive.description }}</p>
-          </li>
-        </ul>
-      </div>
-      <div class="connections">
-        <h2>Your Connections</h2>
-        <ul>
-          <!-- <li v-for="connection in playerCharacter.connections" :key="connection.id">
-            {{ connection.name }}
-          </li> -->
-          <li>...TBD</li>
-        </ul>
-      </div>
-      <div class="reputation">
-        <div class="flex gap-3">
-          <hr class="grow mt-4 border-dotted border-0 border-t-4" />
-          <h3>Your Reputation</h3>
-          <hr class="grow mt-4 border-dotted border-0 border-t-4" />
-        </div>
-        <FactionRelationships :relationships="playerCharacter.relationships" />
-      </div>
-      <div class="stats">
-        <div>
+      <div class="stats p-3">
+        <div class="grid grid-cols-5 md:grid-cols-1 pt-6 bg-blue-100 border-blue-300 border-4 rounded-xl">
           <CharacterStat stat="Charm" :value="playerCharacter.stats?.charm" />
           <CharacterStat stat="Cunning" :value="playerCharacter.stats?.cunning" />
           <CharacterStat stat="Finesse" :value="playerCharacter.stats?.finesse" />
@@ -95,99 +65,107 @@ getPlayerCharacter(1);
           <CharacterStat stat="Might" :value="playerCharacter.stats?.might" />
         </div>
       </div>
-      <div class="moves">
-        <h2>Your Moves</h2>
-        <ul>
-          <li v-for="move in playerCharacter.moves" :key="move.id">
-            <h3>{{ move.name }}</h3>
-            <p>{{ move.description }}</p>
-          </li>
-        </ul>
+      <div class="body grow overflow-y-auto p-4">
+        <TransitionGroup name="fade" mode="out-in">
+          <div v-if="activeCategory?.code === 'moves'">
+            <PlayerActions :playerCharacter="playerCharacter" />
+          </div>
+          <div v-else-if="activeCategory?.code === 'drives'">
+            <div class="natures">
+              <h2>Your Nature</h2>
+              <ul>
+                <li v-for="nature in playerCharacter.natures" :key="nature.id">
+                  <h3>{{ nature.name }}</h3>
+                  <p>{{ nature.description }}</p>
+                </li>
+              </ul>
+            </div>
+            <div class="drives">
+              <h2>Your Drives</h2>
+              <ul>
+                <li v-for="drive in playerCharacter.drives" :key="drive.id">
+                  <h3>{{ drive.name }}</h3>
+                  <p>{{ drive.description }}</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div v-else-if="activeCategory?.code === 'reputation'">
+            <div class="reputation">
+              <h2>Your Reputation</h2>
+              <FactionRelationships :relationships="playerCharacter.relationships" />
+            </div>
+          </div>
+          <div v-else-if="activeCategory?.code === 'equipment'">
+            <div class="equipment">
+              <h2>Your Equipment</h2>
+              <p>...TBD</p>
+            </div>
+          </div>
+          <div v-else-if="activeCategory?.code === 'background'">
+            <div class="details">
+              <div class="name">
+                <p>Name:</p>
+                <p>{{ playerCharacter.name }}</p>
+              </div>
+              <div class="species">
+                <p>Species:</p>
+                <p>...TBD</p>
+              </div>
+              <div class="details">
+                <p>Details:</p>
+                <p>...TBD</p>
+              </div>
+              <div class="demeanor">
+                <p>Demeanor:</p>
+                <p>...TBD</p>
+              </div>
+            </div>
+            <div class="background">
+              <h2>Your Background</h2>
+              <p>...TBD</p>
+            </div>
+            <div class="connections">
+              <h2>Your Connections</h2>
+              <ul>
+                <!-- <li v-for="connection in playerCharacter.connections" :key="connection.id">
+                  {{ connection.name }}
+                </li> -->
+                <li>...TBD</li>
+              </ul>
+            </div>
+          </div>
+        </TransitionGroup>
       </div>
-      <div class="harm">
-        <p>...TBD</p>
-      </div>
-      <div class="roguish_feats">
-        <h2>Roguish Feats</h2>
-        <ul>
-          <li v-for="roguishFeat in playerCharacter.roguishFeats" :key="roguishFeat.id">
-            {{ roguishFeat.name }}
-          </li>
-        </ul>
-      </div>
-      <div class="weapon_skills">
-        <h2>Your Weapon Skills</h2>
-        <ul>
-          <li v-for="weaponSkill in playerCharacter.skills" :key="weaponSkill.id">
-            {{ weaponSkill.name }}
-          </li>
-        </ul>
-      </div>
-      <div class="equipment">
-        <h2>Equipment</h2>
-        <p>...TBD</p>
-      </div>  
     </div>
-    
   </div>
+
+  <TabSelectMenu
+    :categories="categories"
+    @select="onSelectCategory"
+  />
 </template>
 
 <style scoped lang="scss">
-.playbook {
-  display: grid;
-  grid-template-columns: 33%;
-  grid-template-rows: auto;
-  grid-template-areas:
-    "header header header"
-    "details image natures"
-    "background drives connections"
-    "reputation reputation reputation"
-    "stats moves moves"
-    "harm moves moves"
-    "roguish_feats moves moves"
-    "weapon_skills moves moves"
-    "equipment equipment equipment";
+@media (max-width: 768px) {
   .header {
-    grid-area: header;
-  }
-  .details {
-    grid-area: details;
-  }
-  .image {
-    grid-area: image;
-  }
-  .natures {
-    grid-area: natures;
-  }
-  .background {
-    grid-area: background;
-  }
-  .drives {
-    grid-area: drives;
-  }
-  .connections {
-    grid-area: connections;
-  }
-  .reputation {
-    grid-area: reputation;
-  }
-  .stats {
-    grid-area: stats;
-  }
-  .moves {
-    grid-area: moves;
-  }
-  .harm {
-    grid-area: harm;
-  }
-  .roguish_feats {
-    grid-area: roguish_feats;
-  }
-  .weapon_skills {
-    grid-area: weapon_skills;
-  }
-  .equipment {
-    grid-area: equipment;
+    display: grid;
+    grid-template-areas:
+      "image player-name"
+      "image playbook-name";
+    grid-template-columns: 30% 70%;
+
+    .image {
+      grid-area: image;
+    }
+
+    .player-name {
+      grid-area: player-name;
+    }
+
+    .playbook-name {
+      grid-area: playbook-name;
+    }
   }
 }
 </style>
