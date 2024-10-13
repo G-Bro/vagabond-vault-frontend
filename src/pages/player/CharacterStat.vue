@@ -13,6 +13,6 @@ defineProps<{
         <p class="text-2xl mt-1.5">{{ value > 0 ? '+' : value < 0 ? '-' : ''}}{{ value }}</p>
       </div>
     </div>
-    <div class="grow text-center"><p class="text md:pl-2 py-3 font-bold">{{ stat }}</p></div>
+    <div class="grow text-center"><p class="text md:pl-2 pt-3 font-bold">{{ stat }}</p></div>
   </div>
 </template>

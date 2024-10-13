@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PlayerCharacter } from '@vagabondvault/player-character';
+import { PlayerCharacter } from '@vagabondvault/api';
 import { usePlayerCharacter } from '../../clients/playerCharacter';
 import { ref } from 'vue';
 import FactionRelationships from './FactionRelationships.vue';
@@ -7,8 +7,11 @@ import CharacterStat from './CharacterStat.vue';
 import CharacterHarm from './CharacterHarm.vue';
 import TabSelectMenu from './TabSelectMenu.vue';
 import PlayerActions from './PlayerActions.vue';
+import PlayerDrives from './PlayerDrives.vue';
+import PlayerNatures from './PlayerNatures.vue';
 import { faPersonRunning, faFeather, faBriefcase, faMedal, faLeaf } from '@fortawesome/free-solid-svg-icons';
 import type { InformationCategory } from './types';
+import PlayerEquipmentTable from './PlayerEquipmentTable.vue';
 
 const playerCharacterClient = usePlayerCharacter();
 const playerCharacter = ref<PlayerCharacter | null>(null);
@@ -56,8 +59,8 @@ const onSelectCategory = (category: InformationCategory) => {
           <CharacterHarm />
         </div>
       </div>
-      <div class="stats p-3">
-        <div class="grid grid-cols-5 md:grid-cols-1 pt-6 bg-blue-100 border-blue-300 border-4 rounded-xl">
+      <div class="stats">
+        <div class="grid grid-cols-5 md:grid-cols-1 pt-3 bg-gray-50 border-gray-700 border-t-4 border-b-4 rounded-md">
           <CharacterStat stat="Charm" :value="playerCharacter.stats?.charm" />
           <CharacterStat stat="Cunning" :value="playerCharacter.stats?.cunning" />
           <CharacterStat stat="Finesse" :value="playerCharacter.stats?.finesse" />
@@ -65,41 +68,30 @@ const onSelectCategory = (category: InformationCategory) => {
           <CharacterStat stat="Might" :value="playerCharacter.stats?.might" />
         </div>
       </div>
-      <div class="body grow overflow-y-auto p-4">
+      <div class="body grow overflow-y-auto p-3">
         <TransitionGroup name="fade" mode="out-in">
           <div v-if="activeCategory?.code === 'moves'">
             <PlayerActions :playerCharacter="playerCharacter" />
           </div>
           <div v-else-if="activeCategory?.code === 'drives'">
-            <div class="natures">
-              <h2>Your Nature</h2>
-              <ul>
-                <li v-for="nature in playerCharacter.natures" :key="nature.id">
-                  <h3>{{ nature.name }}</h3>
-                  <p>{{ nature.description }}</p>
-                </li>
-              </ul>
-            </div>
-            <div class="drives">
-              <h2>Your Drives</h2>
-              <ul>
-                <li v-for="drive in playerCharacter.drives" :key="drive.id">
-                  <h3>{{ drive.name }}</h3>
-                  <p>{{ drive.description }}</p>
-                </li>
-              </ul>
-            </div>
+            <PlayerDrives :playerCharacter="playerCharacter" class="mb-6" />
+            <PlayerNatures :playerCharacter="playerCharacter" />
           </div>
           <div v-else-if="activeCategory?.code === 'reputation'">
             <div class="reputation">
-              <h2>Your Reputation</h2>
+              <h4 class="w-full border-b pb-2 mb-2">Reputation</h4>
+              <div class="flex text-xs font-bold mb-2">
+                <div class="grow"><p>Faction</p></div>
+                <div class="w-16 text-center text-red-800"><p>Notoriety</p></div>
+                <div class="w-16 text-center"><p>Reputation</p></div>
+                <div class="w-16 text-center text-green-600"><p>Prestige</p></div>
+              </div>
               <FactionRelationships :relationships="playerCharacter.relationships" />
             </div>
           </div>
           <div v-else-if="activeCategory?.code === 'equipment'">
             <div class="equipment">
-              <h2>Your Equipment</h2>
-              <p>...TBD</p>
+              <PlayerEquipmentTable :playerCharacter="playerCharacter" />
             </div>
           </div>
           <div v-else-if="activeCategory?.code === 'background'">

@@ -25,6 +25,20 @@ h6 {
     @apply text-base font-bold;
 }
 
+.detail-block {
+    grid-template-areas: "icon name name" "icon details details";
+    grid-template-columns: 30px auto auto;
+    .detail-block-icon {
+        grid-area: icon;
+    }
+    .detail-block-name {
+        grid-area: name;
+    }
+    .detail-block-details {
+        grid-area: details;
+    }
+}
+
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.35s ease;

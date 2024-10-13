@@ -1,55 +1,42 @@
 <script setup lang="ts">
 import {faSquare, faSquareCheck} from '@fortawesome/free-regular-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
-import { Relationship } from '@vagabondvault/player-character';
+import { Relationship } from '@vagabondvault/api';
 
 defineProps<{
   relationships: Relationship[];
 }>();
 
-const notorietyLevels = 3;
-const prestigeLevels = 3;
-
 const blocksPerNotorietyLevel = 3;
 const blocksPerPrestigeLevel = 5;
+
+const getPrestigeLevels = (currentBonus: number) => {
+  return Math.floor(Math.max(1, currentBonus) * blocksPerPrestigeLevel);
+};
+
+const getNotorietyLevels = (currentBonus: number) => {
+  return Math.floor((Math.abs(Math.min(0, currentBonus)) + 1) * blocksPerNotorietyLevel);
+};
 </script>
 
 <template>
-  <div class="flex" v-for="(relationship, key) in relationships" :key="key">
-    <div class="grow"><p>{{ relationship.faction?.name }}</p></div>
-    <div>
-      <div v-for="i in notorietyLevels" :key="i" :class="{'text-red-800': i < 3}" class="inline-block">
-        <p class="text-lg inline mx-1">{{ i -4 }}</p>
-        <FontAwesomeIcon
-          v-for="j in blocksPerNotorietyLevel"
-          :key="j"
-          :icon="((notorietyLevels - i) * blocksPerNotorietyLevel) + (blocksPerNotorietyLevel - j) < (relationship.notoriety ?? 0) ? faSquareCheck : faSquare"
-          class="text-xl mx-0.5"
-        />
+  <div class="flex mb-2" v-for="(relationship, key) in relationships" :key="key">
+    <div class="grow italic mt-1"><p>{{ relationship.faction?.name }}</p></div>
+    <div class="w-16 text-center text-red-800 mt-1">
+      <div>
+        <p>{{ relationship.notoriety }} / {{ getNotorietyLevels(relationship.bonus ?? 0) }}</p>
       </div>
-      
-      <div class="flex gap-3" v-if="key === relationships.length - 1">
-        <hr class="grow mt-4 border-0 border-t-2 border-red-800" />
-        <h5 class="text-red-800">Notoriety</h5>
-        <hr class="grow mt-4 border-0 border-t-2 border-red-800" />
+      <div class="flex text-center text-xs mt-4" v-if="key === relationships.length - 1">
+        <p class="text-red-800 w-full font-bold">Notoriety</p>
       </div>
     </div>
-    <div><p class="text-lg mx-2">0</p></div>
-    <div>
-      <div v-for="i in prestigeLevels" :key="i" :class="{'text-green-600': i > 1}" class="inline-block">
-        <FontAwesomeIcon
-          v-for="j in blocksPerPrestigeLevel"
-          :key="j"
-          :icon="((i - 1) * blocksPerPrestigeLevel) + j <= (relationship.prestige ?? 0) ? faSquareCheck : faSquare"
-          class="text-xl mx-0.5"
-        />
-        <p class="text-lg inline mx-1">{{ i }}</p>
-      </div>
-      
-      <div class="flex gap-3" v-if="key === relationships.length - 1">
-        <hr class="grow mt-4 border-0 border-t-2 border-green-600" />
-        <h5 class="text-green-600">Prestige</h5>
-        <hr class="grow mt-4 border-0 border-t-2 border-green-600" />
+    <div class="w-16 text-center"><p class="text-2xl mx-2">{{ relationship.bonus }}</p></div>
+    <div class="w-16 text-center text-green-600 mt-1">    
+      <div>
+        <p>{{ relationship.prestige }} / {{ getPrestigeLevels(relationship.bonus ?? 0) }}</p>
+      </div>  
+      <div class="flex text-center text-xs mt-4" v-if="key === relationships.length - 1">
+        <p class="text-green-600 w-full font-bold">Prestige</p>
       </div>
     </div>
   </div>

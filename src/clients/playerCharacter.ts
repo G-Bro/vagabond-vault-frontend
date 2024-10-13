@@ -1,5 +1,4 @@
-import { formatUrl } from './api';
-import { Configuration, PlayerCharacterApi } from '@vagabondvault/player-character';
+import { Configuration, PlayerCharacterApi } from '@vagabondvault/api';
 
 const playerCharacterClient = new PlayerCharacterApi(
     new Configuration({
@@ -9,6 +8,6 @@ const playerCharacterClient = new PlayerCharacterApi(
 
 export const usePlayerCharacter = () => {
     return {
-        get: (id: number) => playerCharacterClient.getPlayerCharacterById(id).then(({ data }) => data),
+        get: (id: number) => playerCharacterClient.getPlayerCharacter(id).then(({ data }) => data),
     }
 };

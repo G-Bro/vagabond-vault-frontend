@@ -10,6 +10,7 @@ export default defineConfig({
     alias: {
       // Alias the @ to /src
       '@cmp': path.resolve('./src/components'),
+      '@clients': path.resolve('./src/clients'),
     }
   }
 })

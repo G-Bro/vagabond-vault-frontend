@@ -23,7 +23,7 @@ const onChooseCategory = (category: InformationCategory) => {
 
 <template>
   <Transition name="fade">
-    <div v-if="showTabSelectDialog" class="fixed top-0 right-0 left-0 bottom-0 bg-black opacity-50 z-10" @click="showTabSelectDialog = false"></div>
+    <div v-if="showTabSelectDialog" class="fixed top-0 right-0 left-0 bottom-0 bg-black opacity-75 z-10" @click="showTabSelectDialog = false"></div>
   </Transition>
   <Transition name="fade">
     <div v-if="showTabSelectDialog" class="fixed bottom-20 left-4 right-4 z-20">
